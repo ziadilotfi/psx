@@ -1,0 +1,812 @@
+<template>
+    <Head :title="$t('backend_setting_module')" />
+    <ps-layout>
+        <div class="">
+            <!-- breadcrumb start -->
+            <ps-breadcrumb-2 :items="breadcrumb" class="mb-5 sm:mb-6 lg:mb-8" />
+            <!-- breadcrumb end -->
+
+            <!-- alert banner start -->
+            <ps-banner-icon  v-if="visible" :visible="visible"
+                             :theme="(status.flag)=='danger'?'bg-red-500':(status.flag)=='warning'?'bg-yellow-500':'bg-green-500'"
+                             :iconName="(status.flag)=='danger'?'close-circle':(status.flag)=='warning'?'alert-triangle':'rightalert'"
+                             class="text-white mb-5 sm:mb-6 lg:mb-8"
+                             iconColor="white">{{status.msg}}</ps-banner-icon>
+            <!-- alert banner end -->
+
+            <ps-card class="w-full h-auto">
+                <div class="bg-background dark:bg-secondaryDark-black rounded-lg mb-20">
+                    <!-- card header start -->
+                    <div class="bg-primary-50 dark:bg-primary-900 py-2.5 ps-4 rounded-t-lg">
+                        <ps-label-header-6 textColor="text-secondary-800 dark:text-secondary-100"> {{ $t(title) }} </ps-label-header-6>
+                    </div>
+                    <!-- card header end -->
+                    
+                    <div >
+                        <div class="grid grid-cols-1 md:grid-cols-2  gap-2 mt-4">
+                            <div>
+                                <div v-if="title == settingColumn[0].label">
+
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'sender_name' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="sender_name" type="text" v-model:value="form.sender_name" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'sender_name', form.sender_name ):''" @blur="coreField.mandatory==1?validateEmptyInput('sender_name', form.sender_name ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.sender_name }}</ps-label-caption>
+                                    </div>
+
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'sender_email' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="sender_email" type="text" v-model:value="form.sender_email" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'sender_email', form.sender_email ):''" @blur="coreField.mandatory==1?validateEmptyInput('sender_email', form.sender_email ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.sender_email }}</ps-label-caption>
+                                    </div>
+
+
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'receive_email' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="receive_email" type="text" v-model:value="form.receive_email" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'receive_email', form.receive_email ):''" @blur="coreField.mandatory==1?validateEmptyInput('receive_email', form.receive_email ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.receive_email }}</ps-label-caption>
+                                    </div>
+
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'fcm_api_key' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-textarea rows="4" ref="fcm_api_key" v-model:value="form.fcm_api_key" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'fcm_api_key', form.fcm_api_key ):''" @blur="coreField.mandatory==1?validateEmptyInput('fcm_api_key', form.fcm_api_key ):''"></ps-textarea>
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.fcm_api_key }}</ps-label-caption>
+                                    </div>
+
+
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'app_token' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="app_token" type="text" v-model:value="form.app_token" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'app_token', form.app_token ):''" @blur="coreField.mandatory==1?validateEmptyInput('app_token', form.app_token ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.app_token }}</ps-label-caption>
+                                    </div>
+
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'topics' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="topics" type="text" v-model:value="form.topics" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'topics', form.topics ):''" @blur="coreField.mandatory==1?validateEmptyInput('topics', form.topics ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.topics }}</ps-label-caption>
+                                    </div>
+
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'topics_fe' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory==1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="topics_fe" type="text" v-model:value="form.topics_fe" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'topics_fe', form.topics_fe ):''" @blur="coreField.mandatory==1?validateEmptyInput('topics_fe', form.topics_fe ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.topics_fe }}</ps-label-caption>
+                                    </div>
+
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'date_format' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory==1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-dropdown align="left" class="lg:mt-2 mt-1 w-full">
+                                            <template #select>
+                                                <ps-dropdown-select ref="date_format" :placeholder="$t(coreField.placeholder)" :showCenter="true" 
+                                                    :selectedValue="form.date_format == '' ? '': dateFormatList.filter((date) => date == form.date_format)[0]" 
+                                                    @change="coreField.mandatory=1?validateEmptyInput('date_format', form.date_format ):''"
+                                                    @blur="coreField.mandatory=1?validateEmptyInput('date_format',form.date_format):''" />
+                                            </template>
+                                            <template #list>
+                                                <div class="rounded-md shadow-xs w-full bg-background dark:bg-backgroundDark">
+                                                    <div class="pt-2 z-30">
+                                                        <div>
+                                                            <div v-for="date in dateFormatList" :key="date"
+                                                                class="w-96 flex py-4 px-2 hover:bg-primary-000 dark:hover:bg-secondary-700 cursor-pointer items-center"
+                                                                @click="[(form.date_format = date), coreField.mandatory=1?validateEmptyInput('date_format',form.date_format):'']">
+                                                                <ps-label class="ms-2" :class="date == form.date_format ? ' font-bold' : '' ">{{ date }}</ps-label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </ps-dropdown>
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.date_format }}</ps-label-caption>
+                                    </div>
+                                </div>
+
+                                <div v-if="title == settingColumn[1].label">
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'smtp_host' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="smtp_host" type="text" v-model:value="form.smtp_host" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'smtp_host', form.smtp_host ):''" @blur="coreField.mandatory==1?validateEmptyInput('smtp_host', form.smtp_host ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.smtp_host }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'smtp_port' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="smtp_port" type="text" v-model:value="form.smtp_port" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'smtp_port', form.smtp_port ):''" @blur="coreField.mandatory==1?validateEmptyInput('smtp_port', form.smtp_port ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.smtp_port }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'smtp_user' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="smtp_user" type="text" v-model:value="form.smtp_user" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'smtp_user', form.smtp_user ):''" @blur="coreField.mandatory==1?validateEmptyInput('smtp_user', form.smtp_user ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.smtp_user }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'smtp_pass' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="smtp_pass" type="password" v-model:value="form.smtp_pass" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'smtp_pass', form.smtp_pass ):''" @blur="coreField.mandatory==1?validateEmptyInput('smtp_pass', form.smtp_pass ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.smtp_pass }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'smtp_encryption' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="smtp_encryption" type="text" v-model:value="form.smtp_encryption" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'smtp_encryption', form.smtp_encryption ):''" @blur="coreField.mandatory==1?validateEmptyInput('smtp_encryption', form.smtp_encryption ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.smtp_encryption }}</ps-label-caption>
+                                    </div>
+
+                                    <div class="px-4 py-3" v-for="( coreField, index) in
+                                            coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'email_verification_enabled' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                            <ps-checkbox-value v-model:value="form.email_verification_enabled" class="font-normal" :title="$t(coreField.placeholder)" />
+                                        </div>
+                                        <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'email_verification_enabled' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="ms-2 text-sm" textColor="text-secondary-400">{{ $t(coreField.label_name) }}</ps-label>
+                                    </div>
+
+                                    <div class="px-4 py-3" v-for="( coreField, index) in
+                                            coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'user_social_info_override' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                            <ps-checkbox-value v-model:value="form.user_social_info_override" class="font-normal" :title="$t(coreField.placeholder)" />
+                                        </div>
+                                        <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'user_social_info_override' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="ms-2 text-sm" textColor="text-secondary-400">{{ $t(coreField.label_name) }}</ps-label>
+                                    </div>
+                                    
+
+                                </div>
+
+                                <div v-if="title == settingColumn[2].label">
+                                    <div class="px-4 py-3">
+                                        <ps-label class="text-base mb-1" >{{ $t('core__backend_logo') }} </ps-label>
+                                        <!-- <ps-input type="file" accept="image/*"   @input="form.backend_logo = $event.target.files"/> -->
+         
+                                        <ps-image-upload  class="w-72" uploadType="icon" v-model:imageFile="form.backend_logo" />
+                                         <ps-label-caption textColor="text-red-500 " class="mt-2 block">{{errors.backend_logo}}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3">
+                                        <ps-label class="text-base mb-1" >{{ $t('core__backend_fav_icon') }}</ps-label>
+                                        <!-- <ps-input type="file" accept="image/*"   @input="form.fav_icon = $event.target.files"/> -->
+
+    
+                                        <ps-image-upload class="w-72" uploadType="icon" v-model:imageFile="form.fav_icon" />
+                                        <ps-label-caption textColor="text-red-500 " class="mt-2 block">{{errors.fav_icon}}</ps-label-caption>
+                                    </div>
+                                    
+
+                                </div>
+                                <div v-if="title == settingColumn[3].label">
+                                    <ps-label class="text-lg px-4 py-3" >{{ $t('core__org_image_size') }}</ps-label>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'landscape_width' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="landscape_width" type="text" v-model:value="form.landscape_width" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'landscape_width', form.landscape_width ):''" @blur="coreField.mandatory==1?validateEmptyInput('landscape_width', form.landscape_width ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.landscape_width }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'potrait_height' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="potrait_height" type="text" v-model:value="form.potrait_height" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'potrait_height', form.potrait_height ):''" @blur="coreField.mandatory==1?validateEmptyInput('potrait_height', form.potrait_height ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.potrait_height }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'square_height' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="square_height" type="text" v-model:value="form.square_height" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'square_height', form.square_height ):''" @blur="coreField.mandatory==1?validateEmptyInput('square_height', form.square_height ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.square_height }}</ps-label-caption>
+                                    </div>
+
+                                    <ps-label class="text-lg px-4 py-3" >{{ $t('core__thumb1x_img_size') }}</ps-label>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'landscape_thumb_width' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="landscape_thumb_width" type="text" v-model:value="form.landscape_thumb_width" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'landscape_thumb_width', form.landscape_thumb_width ):''" @blur="coreField.mandatory==1?validateEmptyInput('landscape_thumb_width', form.landscape_thumb_width ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.landscape_thumb_width }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'potrait_thumb_height' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="potrait_thumb_height" type="text" v-model:value="form.potrait_thumb_height" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'potrait_thumb_height', form.potrait_thumb_height ):''" @blur="coreField.mandatory==1?validateEmptyInput('potrait_thumb_height', form.potrait_thumb_height ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.potrait_thumb_height }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'square_thumb_height' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="square_thumb_height" type="text" v-model:value="form.square_thumb_height" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'square_thumb_height', form.square_thumb_height ):''" @blur="coreField.mandatory==1?validateEmptyInput('square_thumb_height', form.square_thumb_height ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.square_thumb_height }}</ps-label-caption>
+                                    </div>
+
+                                    <ps-label class="text-lg px-4 py-3" >{{ $t('core__thumb2x_img_size') }}</ps-label>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'landscape_thumb2x_width' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="landscape_thumb2x_width" type="text" v-model:value="form.landscape_thumb2x_width" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'landscape_thumb2x_width', form.landscape_thumb2x_width ):''" @blur="coreField.mandatory==1?validateEmptyInput('landscape_thumb2x_width', form.landscape_thumb2x_width ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.landscape_thumb2x_width }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'potrait_thumb2x_height' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="potrait_thumb2x_height" type="text" v-model:value="form.potrait_thumb2x_height" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'potrait_thumb2x_height', form.potrait_thumb2x_height ):''" @blur="coreField.mandatory==1?validateEmptyInput('potrait_thumb2x_height', form.potrait_thumb2x_height ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.potrait_thumb2x_height }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'square_thumb2x_height' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="square_thumb2x_height" type="text" v-model:value="form.square_thumb2x_height" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'square_thumb2x_height', form.square_thumb2x_height ):''" @blur="coreField.mandatory==1?validateEmptyInput('square_thumb2x_height', form.square_thumb2x_height ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.square_thumb2x_height }}</ps-label-caption>
+                                    </div>
+
+                                    <ps-label class="text-lg px-4 py-3" >{{ $t('core__thumb3x_img_size') }}</ps-label>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'landscape_thumb3x_width' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="landscape_thumb3x_width" type="text" v-model:value="form.landscape_thumb3x_width" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'landscape_thumb3x_width', form.landscape_thumb3x_width ):''" @blur="coreField.mandatory==1?validateEmptyInput('landscape_thumb3x_width', form.landscape_thumb3x_width ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.landscape_thumb3x_width }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'potrait_thumb3x_height' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="potrait_thumb3x_height" type="text" v-model:value="form.potrait_thumb3x_height" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'potrait_thumb3x_height', form.potrait_thumb3x_height ):''" @blur="coreField.mandatory==1?validateEmptyInput('potrait_thumb3x_height', form.potrait_thumb3x_height ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.potrait_thumb3x_height }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'square_thumb3x_height' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="square_thumb3x_height" type="text" v-model:value="form.square_thumb3x_height" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'square_thumb3x_height', form.square_thumb3x_height ):''" @blur="coreField.mandatory==1?validateEmptyInput('square_thumb3x_height', form.square_thumb3x_height ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.square_thumb3x_height }}</ps-label-caption>
+                                    </div>
+                                </div>
+                                <div v-if="title == settingColumn[4].label">
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'dyn_link_key' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="dyn_link_key" type="text" v-model:value="form.dyn_link_key" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'dyn_link_key', form.dyn_link_key ):''" @blur="coreField.mandatory==1?validateEmptyInput('dyn_link_key', form.dyn_link_key ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.dyn_link_key }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'dyn_link_domain' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="dyn_link_domain" type="text" v-model:value="form.dyn_link_domain" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'dyn_link_domain', form.dyn_link_domain ):''" @blur="coreField.mandatory==1?validateEmptyInput('dyn_link_domain', form.dyn_link_domain ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.dyn_link_domain }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'dyn_link_url' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="dyn_link_url" type="text" v-model:value="form.dyn_link_url" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'dyn_link_url', form.dyn_link_url ):''" @blur="coreField.mandatory==1?validateEmptyInput('dyn_link_url', form.dyn_link_url ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.dyn_link_url }}</ps-label-caption>
+                                    </div>
+                                     <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'dyn_link_deep_url' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="dyn_link_deep_url" type="text" v-model:value="form.dyn_link_deep_url" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'dyn_link_deep_url', form.dyn_link_deep_url ):''" @blur="coreField.mandatory==1?validateEmptyInput('dyn_link_deep_url', form.dyn_link_deep_url ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.dyn_link_deep_url }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'dyn_link_package_name' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="dyn_link_package_name" type="text" v-model:value="form.dyn_link_package_name" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'dyn_link_package_name', form.dyn_link_package_name ):''" @blur="coreField.mandatory==1?validateEmptyInput('dyn_link_package_name', form.dyn_link_package_name ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.dyn_link_package_name }}</ps-label-caption>
+                                    </div>
+                                    
+                                   
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'ios_boundle_id' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="ios_boundle_id" type="text" v-model:value="form.ios_boundle_id" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'ios_boundle_id', form.ios_boundle_id ):''" @blur="coreField.mandatory==1?validateEmptyInput('ios_boundle_id', form.ios_boundle_id ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.ios_boundle_id }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'ios_appstore_id' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="ios_appstore_id" type="text" v-model:value="form.ios_appstore_id" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'ios_appstore_id', form.ios_appstore_id ):''" @blur="coreField.mandatory==1?validateEmptyInput('ios_appstore_id', form.ios_appstore_id ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.ios_appstore_id }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'backend_version_no' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="backend_version_no" type="text" v-model:value="form.backend_version_no" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'backend_version_no', form.backend_version_no ):''" @blur="coreField.mandatory==1?validateEmptyInput('backend_version_no', form.backend_version_no ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.backend_version_no }}</ps-label-caption>
+                                    </div>
+                                </div>
+                                <div v-if="title == settingColumn[5].label">
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'slow_moving_item_limit' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="slow_moving_item_limit" type="text" v-model:value="form.slow_moving_item_limit" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'slow_moving_item_limit', form.slow_moving_item_limit ):''" @blur="coreField.mandatory==1?validateEmptyInput('slow_moving_item_limit', form.slow_moving_item_limit ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.slow_moving_item_limit }}</ps-label-caption>
+
+                                        <ps-label class="ms-2 mt-1 text-sm" textColor="text-secondary-400">{{ $t('slow_moving_item_limit_info') }}</ps-label>
+                                    </div>
+                                </div>
+                                <div v-if="title == settingColumn[6].label">
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'search_item_limit' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="search_item_limit" type="text" v-model:value="form.search_item_limit" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'search_item_limit', form.search_item_limit ):''" @blur="coreField.mandatory==1?validateEmptyInput('search_item_limit', form.search_item_limit ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.search_item_limit }}</ps-label-caption>
+                                    </div>
+                                    
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'search_category_limit' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="search_category_limit" type="text" v-model:value="form.search_category_limit" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'search_category_limit', form.search_category_limit ):''" @blur="coreField.mandatory==1?validateEmptyInput('search_category_limit', form.search_category_limit ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.search_category_limit }}</ps-label-caption>
+                                    </div>
+                                    <div class="px-4 py-3" v-for="(coreField, index) in coreFieldFilterSettings.filter((coreField) => coreField.original_field_name === 'search_user_limit' && coreField.enable === 1 && coreField.is_delete === 0)" :key="index">
+                                        <ps-label class="text-base flex flex-row">{{ $t(coreField.label_name) }} <span v-if="coreField.mandatory=1" class="text-red-800 font-medium ms-1">*</span></ps-label>
+                                        <ps-input ref="search_user_limit" type="text" v-model:value="form.search_user_limit" :placeholder="$t(coreField.placeholder)"
+                                            @keyup="coreField.mandatory==1?validateEmptyInput( 'search_user_limit', form.search_user_limit ):''" @blur="coreField.mandatory==1?validateEmptyInput('search_user_limit', form.search_user_limit ):''" />
+                                        <ps-label-caption v-if="coreField.mandatory==1" textColor="text-red-500 " class="mt-2 block">{{ errors.search_user_limit }}</ps-label-caption>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row  px-4 py-3 justify-end mb-2.5 mt-4">
+                                    <ps-button @click="handleCancel()" textSize="text-base" type="reset" class="me-4" colors="text-primary-500" focus="" hover="">{{$t('core__be_btn_cancel')}}</ps-button>
+                                    <ps-button @click="handleSubmit()" class="transition-all duration-300 min-w-3xs me-4" padding="px-8 py-0" rounded="rounded" hover="" focus="" >
+                                        <ps-loading v-if="loading" theme="border-2 border-t-2 border-text-8 border-t-primary-500"  loadingSize="h-5 w-5" />
+                                        <ps-icon v-if="success" name="check" w="20" h="20" class="me-1.5 transition-all duration-300" />
+                                        <ps-label v-if="success" class="transition-all duration-300" textColor="text-white dark:text-secondaryDark-black">{{$t('core__be_btn_saved')}}</ps-label>
+                                        <ps-label v-if="!loading && !success" textColor="text-white dark:text-secondaryDark-black" > {{$t('core__be_btn_save')}} </ps-label>
+                                    </ps-button>
+                                </div>
+
+                                <!-- <div v-if="title == settingColumn[1].label" class="pt-6 border-t border-secondary-800 dark:border-secondary-100">
+                                    <div class="p-4 border border-secondary-100 rounded-lg" >
+                                        <ps-label class="text-lg mb-2" >{{$t('core__be_smtp_check')}}</ps-label>
+                                        <ps-label class="text-base mb-2" >{{$t('core__be_smtp_check_info')}}</ps-label>
+                                        
+                                        <div class="">
+                                            <ps-label class="text-base mb-1">{{ $t('core__be_smtp_check_email_label') }} </ps-label>
+                                            <ps-input ref="search_item_limit" type="text" v-model:value="smtpCheckForm.email" :placeholder="$t('core__be_smtp_check_email_placeholder')"
+                                                />
+                                            <ps-label-caption textColor="text-red-500 " class="mt-2 block">{{ errors.email }}</ps-label-caption>
+                                        </div>
+                                        <div class="flex flex-row pt-2 justify-end">
+                                            <ps-button @click="handleCancel()" textSize="text-base" type="reset" class="me-4" colors="text-primary-500" focus="" hover="">{{$t('core__be_btn_cancel')}}</ps-button>
+                                            <ps-button @click="checkSmtpConfiguration()" class="transition-all duration-300 min-w-3xs me-4" padding="px-6 py-2" rounded="rounded" hover="" focus="" >
+                                                <ps-loading v-if="loadingSmtp" theme="border-2 border-t-2 border-text-8 border-t-primary-500"  loadingSize="h-5 w-5" />
+                                                <ps-icon v-if="successSmtp" name="check" w="20" h="20" class="me-1.5 transition-all duration-300" />
+                                                <ps-label v-if="successSmtp" class="transition-all duration-300" textColor="text-white dark:text-secondaryDark-black">{{$t('core__be_btn_success')}}</ps-label>
+                                                <ps-label v-if="!loadingSmtp && !successSmtp" textColor="text-white dark:text-secondaryDark-black" > {{$t('core__be_btn_confirm')}} </ps-label>
+                                            </ps-button>
+
+                                    </div>
+                                </div> -->
+
+                                
+                            </div>
+                            <div class="px-4">
+
+                                <div v-for="column in settingColumn" :key="column.id">
+                                    <div @click="changeSection(column.label)"
+                                        :class="title == column.label ? 'border-l border-l-primary-500' : 'border-l border-l-secondary-300'"
+                                        class="px-2 py-3 cursor-pointer">
+                                        <ps-label :textColor="title == column.label ? 'text-primary-500 dark:text-primary-500' : 'text-secondary-800 dark:text-white'" >
+                                            {{ $t(column.label) }}
+                                        </ps-label>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </ps-card>
+
+            <ps-success-dialog ref="ps_success_dialog" />
+            <ps-error-dialog ref="ps_error_dialog" />
+
+            <!-- <ps-dialog-with-input ref="ps_dialog_with_input">
+                <template #body>
+                    <div class="w-full text-start mt-2">
+                        <ps-label class="font-light text-sm lg:text-base">{{ $t('your_email') }}</ps-label>
+                        <ps-input ref="email" type="email" v-model:value="smtpCheckForm.email" :placeholder="$t('enter_your_email')"
+                                @keyup="validateEmptyInput( 'email', smtpCheckForm.email )" @blur="validateEmptyInput('email', smtpCheckForm.email )" />
+                        <ps-label-caption textColor="text-red-500 " class="mt-2 block">{{ errors.email }}</ps-label-caption>
+                    </div>
+                </template>
+            </ps-dialog-with-input> -->
+        </div>
+    </ps-layout>
+</template>
+
+<script>
+import { defineComponent,ref, reactive } from 'vue'
+import PsLayout from "@/Components/PsLayout.vue";
+import { Head,Link, useForm } from "@inertiajs/inertia-vue3";
+import FlashMessage from "../components/FlashMessage.vue";
+import useValidators from '@/Validation/Validators'
+import PsInput from "@/Components/Core/Input/PsInput.vue";
+import PsLabel from "@/Components/Core/Label/PsLabel.vue";
+import PsButton from "@/Components/Core/Buttons/PsButton.vue";
+import PsTextarea from '@/Components/Core/Textarea/PsTextarea.vue';
+import PsCheckboxValue from "@/Components/Core/Checkbox/PsCheckboxValue.vue";
+import PsLabelHeader4 from "@/Components/Core/Label/PsLabelHeader4.vue";
+import PsLabelCaption from "@/Components/Core/Label/PsLabelCaption.vue";
+import PsIcon from "@/Components/Core/Icons/PsIcon.vue";
+import PsLoading from "@/Components/Core/Loading/PsLoading.vue";
+import PsBreadcrumb2 from "@/Components/Core/Breadcrumbs/PsBreadcrumb2.vue";
+import PsActionModal from '@/Components/Core/Modals/PsActionModal.vue';
+import PsImageIconModal from '@/Components/Core/Modals/PsImageIconModal.vue';
+import PsDangerDialog from "@/Components/Core/Dialog/PsDangerDialog.vue";
+import PsImageUpload from "@/Components/Core/Upload/PsImageUpload.vue";
+import PsSuccessDialog from '@/Components/Core/Dialog/PsSuccessDialog.vue';
+import PsErrorDialog from "@/Components/Core/Dialog/PsErrorDialog.vue";
+import PsDialogWithInput from "@/Components/Core/Dialog/PsDialogWithInput.vue";
+import PsDropdown from "@/Components/Core/Dropdown/PsDropdown.vue";
+import PsDropdownSelect from "@/Components/Core/Dropdown/PsDropdownSelect.vue";
+
+import { trans } from 'laravel-vue-i18n';
+
+export default defineComponent({
+    name: "Edit",
+    components: {
+        FlashMessage,
+        Head,
+        PsInput,
+        PsLabel,
+        PsButton,
+        PsTextarea,
+        PsCheckboxValue,
+        PsLabelHeader4,
+        PsLabelCaption,
+        PsIcon,
+        PsLoading,
+        PsBreadcrumb2,
+        Link,
+        PsActionModal,
+        PsImageIconModal,
+        PsDangerDialog,
+        PsImageUpload,
+        PsSuccessDialog,
+        PsErrorDialog,
+        PsDialogWithInput,
+        PsDropdownSelect,
+        PsDropdown
+    },
+    layout: PsLayout,
+    props: ['errors', 'status', 'coreFieldFilterSettings'],
+    setup(props) {
+        const loading = ref(false);
+        const success = ref(false);
+        const email = ref();
+        const loadingSmtp = ref(false);
+        const successSmtp = ref(false);
+        const ps_action_modal = ref();
+        const ps_image_icon_modal = ref();
+        const ps_danger_dialog = ref();
+        const ps_dialog_with_input = ref();
+        const ps_success_dialog = ref();
+        const ps_error_dialog = ref();
+        let visible = ref(false)
+        let smtpCheckForm = useForm({
+            email: ''
+        });
+        let form = useForm(
+            {
+                sender_name: "",
+                sender_email: "",
+                receive_email: "",
+                fcm_api_key: "",
+                app_token: "",
+                topics: "",
+                topics_fe: "",
+                smtp_host: "",
+                smtp_port: "",
+                smtp_user: "",
+                smtp_pass: "",
+                smtp_encryption: "",
+                email_verification_enabled: "",
+                user_social_info_override: "",
+                landscape_width: "",
+                potrait_height: "",
+                square_height: "",
+                landscape_thumb_width: "",
+                potrait_thumb_height: "",
+                square_thumb_height: "",
+                landscape_thumb2x_width: "",
+                potrait_thumb2x_height: "",
+                square_thumb2x_height: "",
+                landscape_thumb3x_width: "",
+                potrait_thumb3x_height: "",
+                square_thumb3x_height: "",
+                dyn_link_key: "",
+                dyn_link_url: "",
+                dyn_link_package_name: "",
+                dyn_link_domain: "",
+                dyn_link_deep_url: "",
+                ios_boundle_id: "",
+                ios_appstore_id: "",
+                backend_version_no: "",
+                backend_logo: "",
+                fav_icon: "",
+                backend_login_image: "",
+                slow_moving_item_limit: "",
+                search_item_limit: "",
+                search_user_limit:  "",
+                search_category_limit:  "",
+                date_format: '',
+            }
+        )
+
+        const settingColumn = [
+            {
+                label: 'core__backend_setting_info',
+            },
+            {
+                label: 'core__smtp_config',
+            },
+            {
+                label: 'core__image_section',
+            },
+            {
+                label: 'core__image_config',
+            },
+            {
+                label: 'core__deeplink_config',
+            },
+            {
+                label: 'core__slow_moving_item_limit',
+            },
+            {
+                label: 'core__search_limit',
+            }
+        ];
+
+        const dateFormatList = [
+        'YYYY-MM-DD',
+        'YYYY-DD-MM',
+        'DD-MM-YYYY',
+        'MM-DD-YYYY',
+        'DD-MM-YYYY HH:mm',
+        'DD-MM-YYYY HH:mm:ss',
+        'MM-DD-YYYY HH:mm',
+        'MM-DD-YYYY HH:mm:ss',
+        'YYYY-MM-DD HH:mm',
+        'YYYY-MM-DD HH:mm:ss',
+        'YYYY-DD-MM HH:mm',
+        'YYYY-DD-MM HH:mm:ss',
+        'YYYY/MM/DD',
+        'YYYY/DD/MM',
+        'DD/MM/YYYY',
+        'MM/DD/YYYY',
+        'DD/MM/YYYY HH:mm',
+        'DD/MM/YYYY HH:mm:ss',
+        'MM/DD/YYYY HH:mm',
+        'MM/DD/YYYY HH:mm:ss',
+        'YYYY/MM/DD HH:mm',
+        'YYYY/MM/DD HH:mm:ss',
+        'YYYY/DD/MM HH:mm',
+        'YYYY/DD/MM HH:mm:ss',
+        'dddd, MMMM Do YYYY',
+        'HH:mm:ss',
+        'hh:mm a',
+        'YYYY-MM-DDTHH:mm:ssZ',
+        'MMMM D, YYYY',
+        'MMM D, YYYY',
+        'D MMMM YYYY',
+        'D MMM YYYY',
+        'ddd, MMM D YYYY',
+        'ddd, D MMM YYYY',
+        'dddd, MMMM D YYYY',
+        'dddd, D MMMM YYYY',
+        'YYYY',
+        'YYYY-MM',
+      ];
+
+        const title = ref(settingColumn[0].label);
+
+        // Client Side Validation
+        const { isEmail, isEmpty } = useValidators();
+
+        const validateEmptyInput = (fieldName, fieldValue, errorMessage = '') => {
+            props.errors[fieldName] = !fieldValue ? isEmpty(fieldName, fieldValue, errorMessage) : '';
+        }
+
+        const validateEmailInput = (fieldName, fieldValue, errorMessage1 = '', errorMessage2 = '') => {
+            props.errors[fieldName] = !fieldValue ? isEmpty(fieldName, fieldValue, errorMessage1) : isEmail(fieldName, fieldValue, errorMessage2);
+        }
+
+        const onlyNumber = ($e) => {
+            let keyCode = ($e.keyCode ? $e.keyCode : $e.which);
+            if (keyCode < 48 || keyCode > 57) {
+                $e.preventDefault();
+            }
+        }
+        function changeSection(v){
+            title.value = v;
+        }
+        function handleCancel() {
+            this.$inertia.get(route('backend_setting.index'));
+        }
+        function handleSubmit() {
+            // console.log('here');
+            this.$inertia.post(route('backend_setting.store'), form, {
+                forceFormData: true,
+            onBefore: () => {loading.value = true},
+            onSuccess: () => {
+                loading.value = false;
+                success.value = true;
+                setTimeout(()=>{
+                    success.value = false;
+                },2000)
+            },
+            onError: () => {
+                loading.value = false;;
+            },
+            });
+        }
+
+        function openSuccessDialog(){
+            ps_success_dialog.value.openModal(trans('core__be_smtp_configuration_check'),trans('smtp_configuration_is_success'),trans('btn_back'),
+                ()=>{
+                    // Inertia.get(route('language_string.updateAllLanguageStrings'), {
+                    //     onBefore: () => {
+                    //         ps_loading_circle_dialog.value.openModal('Importing','We’re processing your file at the moment. Please wait while we import the file for you.');
+                    //     },
+                    //     onSuccess: () => {
+                    //         ps_loading_circle_dialog.value.closeModal();
+                    //         //
+                    //     },
+                    //     onError: () => {
+                    //         ps_loading_circle_dialog.value.closeModal();
+                    //     },
+                    // });
+
+                },
+                false);
+        }
+
+        function openErrorDialog(){
+            ps_error_dialog.value.openModal(trans('core__be_smtp_configuration_check'), trans('smtp_configuration_is_fail'),trans('core__be_btn_ok'), ()=> {});
+        }
+
+        function checkSmtpConfiguration() {
+            // console.log('there');
+            // ps_dialog_with_input.value.openModal(
+            //     trans('checking_email'),
+            //     trans('core__comfirm_to_delete_row'),
+            //     trans('core__be_btn_confirm'),
+            //     trans('core__be_btn_cancel'),
+            //     () => {
+                    this.$inertia.get(route('backend_setting.checkSmtpConfig'), smtpCheckForm,{
+                        onSuccess: () => {
+                            visible.value = true;
+                            setTimeout(() => {
+                                visible.value = false;
+                            }, 3000);
+                        },
+                        onError: () => {
+                            visible.value = true;
+                            setTimeout(() => {
+                                visible.value = false;
+                            }, 3000);
+                        },
+                    })
+
+                // },
+            //     () => { }
+            // );
+        }
+
+
+        function replaceImageClicked(id, isLogo) {
+            
+            let removeLabel = trans('core__be_remove_icon_label');
+            let replaceLabel = trans('core__be_replace_icon_label');
+            let confirmLabel = trans('core__be_are_u_sure_remove_icon');
+            if(isLogo){
+                removeLabel = trans('core__be_remove_logo_label');
+                replaceLabel = trans('core__be_replace_logo_label');
+                confirmLabel = trans('core__be_are_u_sure_remove_logo');
+            }
+            ps_action_modal.value.openModal(trans('conf_modal_label'),
+                replaceLabel,
+                removeLabel,
+                'image',
+                'trash',
+                '24',
+                '24',
+                () => {
+                    ps_image_icon_modal.value.openModal(
+                        trans('core__be_upload_photo'),
+                        'cloudUpload',
+                        (imageFile) => {
+
+                            let imageForm = useForm({
+                                image: imageFile,
+                                "_method": "put"
+                            })
+
+                            this.$inertia.post(route("image.replace", id), imageForm);
+                        });
+                },
+                () => {
+                    ps_danger_dialog.value.openModal(
+                        trans('core__be_remove_label'),
+                        confirmLabel,
+                        trans('core__be_btn_confirm'),
+                        trans('core__be_btn_cancel'),
+                        () => {
+                            this.$inertia.delete(route("image.destroy", id), {
+                                onBefore: () => {
+                                    loading.value = true;
+                                },
+                                onSuccess: () => {
+                                    loading.value = false;
+                                    success.value = true;
+                                    setTimeout(() => {
+                                        success.value = false;
+                                    }, 2000);
+                                },
+                                onError: () => {
+                                    loading.value = false;
+                                },
+                            });
+                        },
+                        () => { }
+                    );
+                }
+            );
+        }
+
+        return {
+            validateEmailInput,
+            handleCancel,
+            onlyNumber,
+            form,
+            settingColumn,
+            title,
+            changeSection,
+            handleSubmit,
+            loading,
+            success,
+            replaceImageClicked,
+            ps_danger_dialog,
+            ps_image_icon_modal,
+            ps_action_modal,
+            checkSmtpConfiguration,
+            successSmtp,
+            loadingSmtp,
+            ps_success_dialog,
+            openSuccessDialog,
+            ps_error_dialog,
+            openErrorDialog,
+            visible,
+            ps_dialog_with_input,
+            smtpCheckForm,
+            validateEmptyInput,
+            email,
+            dateFormatList
+        }
+    },
+    computed: {
+        breadcrumb() {
+
+            return [
+                {
+                    label: trans('core__be_dashboard_label'),
+                    url: route('admin.index')
+                },
+                {
+                    label: trans('backend_setting_module'),
+                    color: "text-primary-500"
+                }
+            ]
+
+        }
+    },
+    mounted() {
+
+        // if (this.status.flag == "success"){
+        //     this.openSuccessDialog();
+        // }
+        // if (this.status.flag == "danger"){
+        //     this.openErrorDialog();
+        // }
+        // if  (this.errors.email){
+        //     this.checkSmtpConfiguration();
+        // }
+    }
+})
+</script>

@@ -1,0 +1,107 @@
+<template>
+    <div v-if="dataReady == true">
+
+        <GoogleMap id="map" ref="map_ref" :api-key="map.key"
+            :center="map.center" :zoom="map.zoom"  class="map-width-height">
+
+            <Marker :options="mcenter" draggable="false" ref="marker" @drag="onChange"/>
+
+        </GoogleMap>
+
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, ref, onMounted } from 'vue';
+import { GoogleMap , Marker  } from 'vue3-google-map';
+
+export default defineComponent({
+    name : "GoogleMapPinPicker",
+    components: {
+        GoogleMap,
+        Marker,
+    },
+    props : {
+        lat :{
+            type: Number,
+            default :16.8409
+            } ,
+        lng: {
+            type: Number,
+            default :96.1735
+            } ,
+        onChange : Function,
+        draggable: {
+            type: Boolean,
+            default : true
+            },
+        widthHeight: {
+            type: String,
+            default : 'width: 300px; height: 300px'
+        }
+    },
+    setup(props) {
+
+        const map_ref = ref();
+        const marker = ref();
+
+        const lat =ref();
+        const lng = ref();
+        const mcenter = ref({
+            position : {
+            lat: 16.8409,
+            lng: 96.1735
+            },
+            draggable: props.draggable
+        });
+
+        const coordinates = ref({
+            lat: 16.8409,
+            lng: 96.1735
+        });
+
+        const map = ref({
+            key: '000',
+            center: coordinates,
+            zoom: 10
+        });
+
+        const dataReady = ref(false);
+
+        async function loadMap(){
+
+            if(lat.value != null && lng.value != null) {
+
+                mcenter.value.position.lat = lat.value;
+                mcenter.value.position.lng = lng.value;
+                map.value.center = mcenter.value.position;
+                coordinates.value = mcenter.value.position;
+
+            }
+
+            map.value.key = 'AIzaSyCtBHbqTWRgh9O8veCOJNnCMG56lXTdGJw';
+
+            dataReady.value = true;
+
+        }
+
+        onMounted( async () => {
+            lat.value = props.lat == null || isNaN(props.lat) ? 16.8409 : props.lat;
+            lng.value = props.lng == null || isNaN(props.lng) ? 96.1735 : props.lng;
+            map.value.center = mcenter.value.position;
+            await loadMap();
+        });
+
+        return {
+
+            mcenter,
+            dataReady,
+            map,
+            map_ref,
+            coordinates,
+            marker,
+
+         }
+    },
+})
+</script>

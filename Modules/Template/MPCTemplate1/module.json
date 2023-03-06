@@ -1,0 +1,11 @@
+{
+    "name": "MPCTemplate1",
+    "alias": "mpctemplate1",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Template\\MPCTemplate1\\Providers\\MPCTemplate1ServiceProvider"
+    ],
+    "files": []
+}
